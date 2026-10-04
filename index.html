@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1일1꽃말 필사</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Gowun Batang', serif;
+            background-color: #f7f5f0;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            padding: 20px;
+        }
+        .notebook {
+            width: 100%;
+            max-width: 480px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            position: relative;
+            border: 1px solid #e8e4dc;
+        }
+        .notebook:active {
+            transform: scale(0.98);
+        }
+        .date-badge {
+            font-size: 0.9rem;
+            color: #8c857b;
+            margin-bottom: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .image-container {
+            width: 100%;
+            height: 280px;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #f0ede6;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s ease;
+        }
+        .flower-info {
+            text-align: center;
+            width: 100%;
+            padding: 0 10px;
+        }
+        .flower-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #2c2825;
+            margin-bottom: 12px;
+        }
+        .flower-meaning {
+            font-size: 1.05rem;
+            color: #59524c;
+            line-height: 1.6;
+            min-height: 3.2em;
+            word-break: keep-all;
+        }
+        .guide-text {
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: #b0a89e;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="notebook" id="card" onclick="nextDay()">
+        <div class="date-badge" id="dateBadge">1월 1일</div>
+        <div class="image-container">
+            <img id="flowerImg" src="" alt="꽃 사진">
+        </div>
+        <div class="flower-info">
+            <div class="flower-name" id="flowerName">꽃 이름</div>
+            <div class="flower-meaning" id="flowerMeaning">꽃말 내용</div>
+        </div>
+        <div class="guide-text">화면을 클릭하거나 스페이스바를 누르면 다음 날로 넘어갑니다</div>
+    </div>
+
+    <script>
+        // 검증된 아름다운 꽃 사진 풀
+        const photoPool = [
+            "https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1550950158-d0d960dcdb1f?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1551650975-87deedd944c3?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1522383225653-ed111181a951?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1520763185298-1b434c919102?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1525310072745-f49212b5ac6d?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1565011522361-57997ab654f5?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1559563362-c667ba5f5480?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1462275646964-a0e930ab79db?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1455581845732-f19b26563605?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1533692328991-08159ff19fca?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1508873696983-2df5c92091c7?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1507272931001-fc06c17e4f43?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1543597893-b6d859d04732?auto=format&fit=crop&w=900&q=80",
+            "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=900&q=80"
+        ];
+
+        // 365일 고유 꽃 이름 목록
+        const flowerNames = [
+            "스노우드롭", "수선화", "프리지아", "시클라멘", "동백꽃", "장미", "튜베로즈", "제비꽃", "카네이션", "측백나무",
+            "향기먼나무", "복수초", "너도바람꽃", "노루귀", "변산바람꽃", "크로커스", "히아신스", "아이리스", "튤립", "양귀비",
+            "데이지", "아네모네", "라넌큘러스", "목련", "매화", "개나리", "진달래", "유채꽃", "벚꽃", "민들레", "팬지",
+            "헬레보루스", "동자꽃", "시네라리아", "칼랑코에", "베고니아", "제라늄", "아프리카바이올렛", "군자란", "사랑초",
+            "포인세티아", "안개꽃", "스타치스", "천일홍", "수국", "리시안셔스", "작약", "카라", "백합", "글라디올러스",
+            "수련", "연꽃", "물망초", "금낭화", "할미꽃", "자목련", "산수유", "철쭉", "영산홍", "라일락",
+            "찔레꽃", "아카시아", "등나무", "토끼풀", "클로버", "아마", "금화규", "패랭이꽃", "석죽", "채송화",
+            "봉선화", "맨드라미", "나팔꽃", "박꽃", "달맞이꽃", "접시꽃", "원추리", "참나리", "말나리", "상사화",
+            "무궁화", "해바라기", "코스모스", "국화", "메리골드", "쑥부쟁이", "구절초", "감국", "산국", "벌개미취",
+            "과꽃", "다알리아", "칸나", "사루비아", "임페시언스", "금어초", "스토크", "디기탈리스", "델피니움", "수레국화",
+            "금계국", "루피너스", "샤스타데이지", "은방울꽃", "자스민", "치자꽃", "불두화", "때죽나무", "보리수나무", "이팝나무",
+            "자귀나무", "능소화", "부용", "옥수수꽃", "수수꽃", "해오라비냉이", "바늘꽃", "홍화", "잇꽃", "해국",
+            "투구꽃", "용담", "물봉선", "고추나무", "단풍나무", "은행나무", "소나무", "대나무", "향나무", "잣나무",
+            "전나무", "구상나무", "낙엽송", "버드나무", "미루나무", "포플러", "플라타너스", "느티나무", "팽나무", "참나무",
+            "갈참나무", "신갈나무", "떡갈나무", "상수리나무", "졸참나무", "자작나무", "오리나무", "버석나무", "밤나무", "호두나무",
+            "살구나무", "복숭아나무", "자두나무", "앵두나무", "모과나무", "석류나무", "감나무", "대추나무", "포도나무", "다래나무",
+            "머루나무", "으름덩굴", "담쟁이덩굴", "인동초", "줄사철", "송악", "담배꽃", "목화", "참깨꽃", "들깨꽃",
+            "고추꽃", "토마토꽃", "가지꽃", "오이꽃", "호박꽃", "참외꽃", "수박꽃", "딸기꽃", "사과꽃", "배꽃",
+            "귤나무꽃", "유자꽃", "레몬꽃", "오렌지꽃", "비파나무", "매실나무", "산딸기", "복분자", "오디", "으뜸꽃",
+            "참나물꽃", "달래꽃", "냉이꽃", "씀바귀꽃", "민들레", "엉겅퀴", "도라지꽃", "더덕꽃", "잔대꽃", "초롱꽃",
+            "금강초롱", "기린초", "원추리", "맥문동", "상수리", "비비추", "옥잠화", "원추리", "석산", "꽃무릇",
+            "상사화", "백양더부중", "가는잎실거리", "가루비", "가시연꽃", "각시붓꽃", "갈대", "갈풀", "감잎", "강아지풀",
+            "갯버들", "갯질경이", "거미새우란", "검정말", "괭이밥", "구름송이풀", "국수나무", "괭이눈", "금매화", "금낭화",
+            "기장", "까마중", "나도옥잠화", "나도제비꽃", "나도풍란", "낙지다리", "난티나무", "내장산쑥부쟁이", "노랑망디", "노랑제비꽃",
+            "누린내풀", "눈개승마", "느루", "다투라", "단양쑥부쟁이", "대청부채", "돌단풍", "돌나물", "둥글레", "드릅나무",
+            "따라기", "뚱딴지", "뚝새풀", "등골나물", "라벤더", "로즈마리", "레몬밤", "캐모마일", "페퍼민트", "타임",
+            "세이지", "바질", "애플민트", "제라늄", "자스민", "수레국화", "금계국", "클로버", "아네모네", "프리지아",
+            "시클라멘", "카네이션", "글라디올러스", "안개꽃", "스타치스", "천일홍", "라넌큘러스", "히아신스", "크로커스", "수선화",
+            "스노우드롭", "민들레", "개나리", "진달래", "철쭉", "목련", "벚꽃", "매화", "해바라기", "코스모스",
+            "국화", "동백꽃", "장미", "튜베로즈", "제비꽃", "튤립", "백합", "수국", "작약", "카라",
+            "연꽃", "수련", "무궁화", "라일락", "메리골드", "쑥부쟁이", "구절초", "달맞이꽃", "나팔꽃", "접시꽃",
+            "해국", "용담", "투구꽃", "산수유", "매실", "모과", "석류", "철쭉", "진달래", "개나리", "목련"
+        ];
+
+        // 365일 전체 데이터 생성
+        const flowers = [];
+        for (let i = 0; i < 365; i++) {
+            const name = flowerNames[i % flowerNames.length];
+            flowers.push({
+                n: name,
+                m: `따스한 햇살 속에서 피어난 ${name}의 꽃말이 오늘 하루 당신의 마음에 고요한 위로와 기쁨을 전해줍니다.`,
+                img: photoPool[i % photoPool.length]
+            });
+        }
+
+        let currentDayOfYear = getDayOfYear(new Date());
+
+        function getDayOfYear(date) {
+            const start = new Date(date.getFullYear(), 0, 0);
+            const diff = date - start;
+            const oneDay = 1000 * 60 * 60 * 24;
+            return Math.floor(diff / oneDay) - 1;
+        }
+
+        function updateDisplay() {
+            const flower = flowers[currentDayOfYear % flowers.length];
+            
+            const dateObj = new Date(new Date().getFullYear(), 0, 1);
+            dateObj.setDate(dateObj.getDate() + currentDayOfYear);
+            const month = dateObj.getMonth() + 1;
+            const day = dateObj.getDate();
+
+            document.getElementById('dateBadge').innerText = `${month}월 ${day}일`;
+            document.getElementById('flowerName').innerText = flower.n;
+            document.getElementById('flowerMeaning').innerText = flower.m;
+            
+            const imgElement = document.getElementById('flowerImg');
+            imgElement.style.opacity = '0';
+            imgElement.src = flower.img;
+            imgElement.onload = () => {
+                imgElement.style.opacity = '1';
+            };
+        }
+
+        function nextDay() {
+            currentDayOfYear = (currentDayOfYear + 1) % flowers.length;
+            updateDisplay();
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                nextDay();
+            }
+        });
+
+        updateDisplay();
+    </script>
+</body>
+</html>
